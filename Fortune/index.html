@@ -161,40 +161,41 @@
             0%, 100% { opacity: 0; }
             10%, 90% { opacity: 1; }
         }
+
     </style>
 </head>
 <body>
     <button class="admin-trigger" id="adminTrigger"></button>
     <div class="admin-notify" id="adminNotify"></div>
 
-    <div class="container">
+    <div class="container" id="mainContainer">
         <h1>🔮 Fortune</h1>
         <p class="subtitle">당신의 운세를 확인하세요</p>
 
         <div class="fortune-grid">
-            <a href="daily.html" class="fortune-card daily">
+            <div class="fortune-card daily" onclick="navigateToPage('daily.html')">
                 <div class="fortune-icon">☀️</div>
                 <div class="fortune-title">오늘의 운세</div>
                 <div class="fortune-desc">오늘 하루의 운세와 행운의 아이템을 알려드립니다</div>
-            </a>
+            </div>
 
-            <a href="tarot.html" class="fortune-card tarot">
+            <div class="fortune-card tarot" onclick="navigateToPage('tarot.html')">
                 <div class="fortune-icon">🃏</div>
                 <div class="fortune-title">타로</div>
                 <div class="fortune-desc">신비로운 타로 카드로 당신의 미래를 점쳐보세요</div>
-            </a>
+            </div>
 
-            <a href="saju.html" class="fortune-card saju">
+            <div class="fortune-card saju" onclick="navigateToPage('saju.html')">
                 <div class="fortune-icon">📿</div>
                 <div class="fortune-title">사주</div>
                 <div class="fortune-desc">생년월일로 당신의 행운을 알아보세요</div>
-            </a>
+            </div>
 
-            <a href="omikuji.html" class="fortune-card omikuji">
+            <div class="fortune-card omikuji" onclick="navigateToPage('omikuji.html')">
                 <div class="fortune-icon">🎋</div>
                 <div class="fortune-title">운세 뽑기</div>
                 <div class="fortune-desc">신비로운 운세로 길흉을 점쳐보세요</div>
-            </a>
+            </div>
         </div>
 
         <div class="footer">
@@ -203,6 +204,11 @@
     </div>
 
     <script>
+        // Navigate to page directly
+        function navigateToPage(page) {
+            window.location.href = page;
+        }
+
         let adminClickCount = 0;
         let lastClickTime = 0;
         const adminButton = document.getElementById('adminTrigger');

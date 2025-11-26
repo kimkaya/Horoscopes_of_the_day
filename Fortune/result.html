@@ -658,6 +658,11 @@
             // 자동 인쇄
             setTimeout(() => {
                 window.print();
+
+                // 인쇄 후 메인 페이지로 돌아가기 (3초 후)
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 3000);
             }, 500);
         }
 

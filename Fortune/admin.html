@@ -76,6 +76,15 @@
             background: #45a049;
         }
 
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #da190b;
+        }
+
         .stats {
             padding: 30px 40px;
             display: grid;
@@ -274,6 +283,60 @@
             line-height: 1.6;
             white-space: pre-wrap;
         }
+
+        .delete-confirm-modal .modal-content {
+            max-width: 500px;
+        }
+
+        .warning-icon {
+            font-size: 64px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .warning-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #f44336;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .warning-message {
+            font-size: 16px;
+            color: #333;
+            text-align: center;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .warning-detail {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+            font-size: 14px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .modal-actions button {
+            flex: 1;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
     </style>
 </head>
 <body>
@@ -281,6 +344,7 @@
         <div class="header">
             <h1>🔮 Fortune 관리자</h1>
             <div class="header-actions">
+                <button class="btn btn-danger" onclick="showDeleteConfirmModal()">전체 데이터 삭제</button>
                 <button class="btn btn-success" onclick="exportExcel()">엑셀 다운로드</button>
                 <a href="index.html" class="btn btn-primary">메인으로</a>
             </div>
@@ -356,6 +420,25 @@
                 <h2>운세 상세 정보</h2>
             </div>
             <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Delete Confirm Modal -->
+    <div id="deleteConfirmModal" class="modal delete-confirm-modal">
+        <div class="modal-content">
+            <div class="warning-icon">⚠️</div>
+            <div class="warning-title">정말로 지우시겠습니까?</div>
+            <div class="warning-message">
+                모든 운세 데이터가 영구적으로 삭제됩니다.
+            </div>
+            <div class="warning-detail">
+                ⚠️ 경고: 지워진 데이터는 복구되지 않습니다.<br>
+                이 작업은 되돌릴 수 없으니 신중하게 결정해주세요.
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeDeleteConfirmModal()">취소</button>
+                <button class="btn btn-danger" onclick="deleteAllData()">동의하고 삭제</button>
+            </div>
         </div>
     </div>
 
@@ -518,6 +601,40 @@
             document.getElementById('detailModal').classList.remove('show');
         }
 
+        // Show delete confirm modal
+        function showDeleteConfirmModal() {
+            document.getElementById('deleteConfirmModal').classList.add('show');
+        }
+
+        // Close delete confirm modal
+        function closeDeleteConfirmModal() {
+            document.getElementById('deleteConfirmModal').classList.remove('show');
+        }
+
+        // Delete all data
+        async function deleteAllData() {
+            try {
+                const response = await fetch('../Fortune_api/delete_all_data.php', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('모든 데이터가 성공적으로 삭제되었습니다.');
+                    closeDeleteConfirmModal();
+                    // Reload data
+                    allHistory = [];
+                    filteredHistory = [];
+                    updateStats();
+                    displayHistory();
+                } else {
+                    alert('데이터 삭제 실패: ' + data.message);
+                }
+            } catch (error) {
+                alert('서버 연결 오류: ' + error.message);
+            }
+        }
+
         // Filter function
         function filterHistory() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
@@ -543,9 +660,14 @@
 
         // Close modal when clicking outside
         window.onclick = function(event) {
-            const modal = document.getElementById('detailModal');
-            if (event.target === modal) {
+            const detailModal = document.getElementById('detailModal');
+            const deleteModal = document.getElementById('deleteConfirmModal');
+
+            if (event.target === detailModal) {
                 closeModal();
+            }
+            if (event.target === deleteModal) {
+                closeDeleteConfirmModal();
             }
         }
 
