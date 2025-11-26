@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>운세 결과 - Fortune</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 1980px;
+            width: 1080px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .container {
+            background: transparent;
+            padding: 60px 50px;
+            border-radius: 0;
+            box-shadow: none;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        /* Receipt Style */
+        .receipt {
+            background: white;
+            padding: 40px 30px;
+            font-family: 'Courier New', monospace;
+            border: none;
+            position: relative;
+        }
+
+        .receipt::before,
+        .receipt::after {
+            content: '';
+            position: absolute;
+            left: -2px;
+            right: -2px;
+            height: 10px;
+            background: linear-gradient(45deg, transparent 33.33%, white 33.33%, white 66.66%, transparent 66.66%),
+                        linear-gradient(-45deg, transparent 33.33%, white 33.33%, white 66.66%, transparent 66.66%);
+            background-size: 20px 40px;
+            background-position: 0 -10px;
+        }
+
+        .receipt::before {
+            top: -12px;
+        }
+
+        .receipt::after {
+            bottom: -12px;
+        }
+
+        .receipt-header {
+            text-align: center;
+            border-bottom: 2px dashed #333;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .receipt-title {
+            font-size: 42px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .receipt-subtitle {
+            font-size: 24px;
+            color: #666;
+        }
+
+        .receipt-section {
+            margin: 20px 0;
+            padding: 15px 0;
+            border-bottom: 1px dashed #ccc;
+        }
+
+        .receipt-section:last-child {
+            border-bottom: none;
+        }
+
+        .receipt-label {
+            font-size: 22px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .receipt-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .receipt-content {
+            font-size: 24px;
+            line-height: 2.0;
+            white-space: pre-wrap;
+        }
+
+        .receipt-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 3px dashed #333;
+            font-size: 24px;
+            color: #999;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 20px;
+            border: 3px solid #333;
+            background: white;
+            border-radius: 8px;
+            font-size: 26px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+
+        button:hover {
+            background: #333;
+            color: white;
+        }
+
+        .fortune-icon {
+            font-size: 80px;
+            margin: 15px 0;
+        }
+
+        .barcode {
+            text-align: center;
+            margin: 30px 0;
+            font-family: 'Libre Barcode 128', cursive;
+            font-size: 72px;
+            letter-spacing: 3px;
+        }
+
+        .error {
+            text-align: center;
+            color: #d32f2f;
+            padding: 20px;
+        }
+
+        /* 행운 메시지 박스 */
+        .fortune-box {
+            background: white;
+            border: 3px solid #333;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* 화면에 표시될 감사 메시지 */
+        .thank-you-screen {
+            background: white;
+            border: 3px dashed white;
+            padding: 70px 50px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .thank-you-screen h1 {
+            font-size: 48px;
+            margin-bottom: 40px;
+            color: #333;
+        }
+
+        .thank-you-screen .bow-image {
+            font-size: 150px;
+            margin: 40px 0;
+            animation: bow 2s ease-in-out infinite;
+        }
+
+        @keyframes bow {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(15deg); }
+        }
+
+        .thank-you-screen p {
+            font-size: 28px;
+            color: #666;
+            margin-top: 30px;
+        }
+
+        /* 프린트 전용 스타일 */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                width: auto;
+                min-height: auto;
+            }
+
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+
+            /* 화면용 감사 메시지 숨기기 */
+            .thank-you-screen {
+                display: none !important;
+            }
+
+            /* 영수증 내용 표시 */
+            #receipt-content {
+                display: block !important;
+            }
+
+            .loading {
+                display: none !important;
+            }
+        }
+
+        /* 화면에서는 영수증 내용 숨기기 */
+        @media screen {
+            #receipt-content {
+                display: none !important;
+            }
+
+            .thank-you-screen {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 화면에 표시될 감사 메시지 -->
+        <div class="thank-you-screen" id="thankYouScreen" style="display: none;">
+            <h1>당신의 행운을 빕니다</h1>
+            <div class="bow-image">🙇</div>
+            <p>영수증이 출력됩니다</p>
+        </div>
+
+        <!-- 프린트용 영수증 -->
+        <div class="receipt" id="receipt">
+            <div class="loading" id="loading">운세를 가져오는 중</div>
+            <div id="receipt-content" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // URL 파라미터 가져오기
+        const urlParams = new URLSearchParams(window.location.search);
+        const fortuneType = urlParams.get('type');
+        const name = urlParams.get('name');
+        const birthdate = urlParams.get('birthdate');
+        const gender = urlParams.get('gender');
+        const question = urlParams.get('question');
+
+        // API 호출
+        async function getFortune() {
+            try {
+                const response = await fetch('../Fortune_api/get_fortune.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        type: fortuneType,
+                        name: name,
+                        birthdate: birthdate,
+                        gender: gender,
+                        question: question
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayFortune(data.fortune);
+                } else {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('thankYouScreen').innerHTML = `<div class="error">${data.message}</div>`;
+                    document.getElementById('thankYouScreen').style.display = 'block';
+                }
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('thankYouScreen').innerHTML = `<div class="error">운세를 가져오는데 실패했습니다.</div>`;
+                document.getElementById('thankYouScreen').style.display = 'block';
+            }
+        }
+
+        function displayFortune(fortune) {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('ko-KR');
+            const timeStr = now.toLocaleTimeString('ko-KR');
+
+            let icon = '🔮';
+            let title = '운세';
+
+            switch(fortuneType) {
+                case 'daily':
+                    icon = '☀️';
+                    title = '오늘의 운세';
+                    break;
+                case 'tarot':
+                    icon = '🃏';
+                    title = '타로';
+                    break;
+                case 'saju':
+                    icon = '📿';
+                    title = '사주';
+                    break;
+                case 'omikuji':
+                    icon = '🎋';
+                    title = '운세 뽑기';
+                    break;
+            }
+
+            // 화면용 감사 메시지에 운세 결과 요약 추가
+            let fortuneSummary = '';
+            if (fortune.overall) {
+                fortuneSummary = fortune.overall.substring(0, 100) + (fortune.overall.length > 100 ? '...' : '');
+            } else if (fortune.overall_interpretation) {
+                fortuneSummary = fortune.overall_interpretation.substring(0, 100) + (fortune.overall_interpretation.length > 100 ? '...' : '');
+            } else if (fortune.interpretation) {
+                fortuneSummary = fortune.interpretation.substring(0, 100) + (fortune.interpretation.length > 100 ? '...' : '');
+            } else if (fortune.card_meaning) {
+                fortuneSummary = fortune.card_meaning.substring(0, 100) + (fortune.card_meaning.length > 100 ? '...' : '');
+            } else if (fortune.fortune_text) {
+                fortuneSummary = fortune.fortune_text.substring(0, 100) + (fortune.fortune_text.length > 100 ? '...' : '');
+            }
+
+            document.getElementById('thankYouScreen').innerHTML = `
+                <h1>당신의 행운을 빕니다</h1>
+                <div class="bow-image">🙇</div>
+                ${fortuneSummary ? `<div style="font-size: 22px; color: #666; margin: 20px 0; line-height: 1.6;">${fortuneSummary}</div>` : ''}
+                <p>영수증이 출력됩니다</p>
+            `;
+
+            // 영수증 내용 생성 (프린트용)
+            let receiptHtml = `
+                <div class="receipt-header">
+                    <div class="fortune-icon">${icon}</div>
+                    <div class="receipt-title">${title}</div>
+                    <div class="receipt-subtitle">FORTUNE RECEIPT</div>
+                </div>
+
+                <div class="receipt-section">
+                    <div class="receipt-label">일시</div>
+                    <div class="receipt-value">${dateStr} ${timeStr}</div>
+                </div>
+
+                <div class="receipt-section">
+                    <div class="receipt-label">이름</div>
+                    <div class="receipt-value">${name}</div>
+                </div>
+            `;
+
+            // 생년월일 추가
+            if (birthdate) {
+                receiptHtml += `
+                    <div class="receipt-section">
+                        <div class="receipt-label">생년월일</div>
+                        <div class="receipt-value">${birthdate}</div>
+                    </div>
+                `;
+            }
+
+            // 별자리 추가 (오늘의 운세인 경우)
+            if (fortuneType === 'daily' && fortune.zodiac_sign) {
+                receiptHtml += `
+                    <div class="receipt-section">
+                        <div class="receipt-label">별자리</div>
+                        <div class="receipt-value">${fortune.zodiac_sign}</div>
+                    </div>
+                `;
+            }
+
+            // 성별 추가
+            if (gender) {
+                const genderMap = {
+                    'male': '남성',
+                    'female': '여성',
+                    'other': '기타'
+                };
+                receiptHtml += `
+                    <div class="receipt-section">
+                        <div class="receipt-label">성별</div>
+                        <div class="receipt-value">${genderMap[gender] || gender}</div>
+                    </div>
+                `;
+            }
+
+            // 질문 추가 (타로 등)
+            if (question) {
+                receiptHtml += `
+                    <div class="receipt-section">
+                        <div class="receipt-label">질문</div>
+                        <div class="receipt-content">${question}</div>
+                    </div>
+                `;
+            }
+
+            // 타로 카드 3장 표시
+            if (fortune.cards && Array.isArray(fortune.cards)) {
+                fortune.cards.forEach((card, index) => {
+                    receiptHtml += `
+                        <div class="receipt-section">
+                            <div class="receipt-label">${card.position} 카드</div>
+                            <div class="receipt-value">${card.card_name}</div>
+                            <div class="receipt-content">${card.card_meaning}</div>
+                        </div>
+                    `;
+                });
+
+                // 타로 종합 해석
+                if (fortune.overall_interpretation) {
+                    receiptHtml += `
+                        <div class="receipt-section">
+                            <div class="receipt-label">종합 해석</div>
+                            <div class="receipt-content">${fortune.overall_interpretation}</div>
+                        </div>
+                    `;
+                }
+            }
+
+            // 사주 결과 표시
+            if (fortuneType === 'saju') {
+                if (fortune.zodiac_sign) {
+                    receiptHtml += `
+                        <div class="receipt-section">
+                            <div class="receipt-label">띠</div>
+                            <div class="receipt-value">${fortune.zodiac_sign}</div>
+                        </div>
+                    `;
+                }
+
+                if (fortune.element) {
+                    receiptHtml += `
+                        <div class="receipt-section">
+                            <div class="receipt-label">오행</div>
+                            <div class="receipt-value">${fortune.element}</div>
+                        </div>
+                    `;
+                }
+
+                if (fortune.personality_text) {
+                    receiptHtml += `
+                        <div class="receipt-section">
+                            <div class="receipt-label">성격</div>
+                            <div class="receipt-content">${fortune.personality_text}</div>
+                        </div>
+                    `;
+                }
+
+                if (fortune.fortune_text) {
+                    receiptHtml += `
+                        <div class="receipt-section">
+                            <div class="receipt-label">운세</div>
+                            <div class="receipt-content">${fortune.fortune_text}</div>
+                        </div>
+                    `;
+                }
+
+                if (fortune.career_text) {
+                    receiptHtml += `
+                        <div class="receipt-section">
+                            <div class="receipt-label">재물운</div>
+                            <div class="receipt-content">${fortune.career_text}</div>
+                        </div>
+                    `;
+                }
+
+                if (fortune.love_text) {
+                    receiptHtml += `
+                        <div class="receipt-section">
+                            <div class="receipt-label">애정운</div>
+                            <div class="receipt-content">${fortune.love_text}</div>
+                        </div>
+                    `;
+                }
+            }
+
+            // 운세 뽑기 (omikuji) 결과 표시
+            if (fortuneType === 'omikuji') {
+                if (fortune.fortune_level) {
+                    // 한자 옆에 한글 발음 추가
+                    const fortuneLevelMap = {
+                        '大吉': '大吉 (대길)',
+                        '中吉': '中吉 (중길)',
+                        '小吉': '小吉 (소길)',
+                        '吉': '吉 (길)',
+                        '末吉': '末吉 (말길)',
+                        '半吉': '半吉 (반길)',
+                        '凶': '凶 (흉)',
+                        '小凶': '小凶 (소흉)',
+                        '大凶': '大凶 (대흉)'
+                    };
+                    const displayLevel = fortuneLevelMap[fortune.fortune_level] || fortune.fortune_level;
+
+                    receiptHtml += `
+                        <div class="receipt-section">
+                            <div class="receipt-label">길흉</div>
+                            <div class="receipt-value">${displayLevel}</div>
+                        </div>
+                    `;
+                }
+
+                if (fortune.fortune_text) {
+                    receiptHtml += `
+                        <div class="receipt-section">
+                            <div class="receipt-label">운세</div>
+                            <div class="receipt-content">${fortune.fortune_text}</div>
+                        </div>
+                    `;
+                }
+
+                if (fortune.wish_text) {
+                    receiptHtml += `
+                        <div class="receipt-section">
+                            <div class="receipt-label">소원</div>
+                            <div class="receipt-content">${fortune.wish_text}</div>
+                        </div>
+                    `;
+                }
+
+                if (fortune.health_text) {
+                    receiptHtml += `
+                        <div class="receipt-section">
+                            <div class="receipt-label">건강</div>
+                            <div class="receipt-content">${fortune.health_text}</div>
+                        </div>
+                    `;
+                }
+
+                if (fortune.business_text) {
+                    receiptHtml += `
+                        <div class="receipt-section">
+                            <div class="receipt-label">학업/사업</div>
+                            <div class="receipt-content">${fortune.business_text}</div>
+                        </div>
+                    `;
+                }
+
+                if (fortune.travel_text) {
+                    receiptHtml += `
+                        <div class="receipt-section">
+                            <div class="receipt-label">여행</div>
+                            <div class="receipt-content">${fortune.travel_text}</div>
+                        </div>
+                    `;
+                }
+            }
+
+            // 오늘의 운세 (daily) 결과 표시
+            if (fortuneType === 'daily') {
+                if (fortune.overall) {
+                    receiptHtml += `
+                        <div class="receipt-section">
+                            <div class="receipt-label">종합 운세</div>
+                            <div class="receipt-content">${fortune.overall}</div>
+                        </div>
+                    `;
+                }
+
+                if (fortune.lucky_item) {
+                    receiptHtml += `
+                        <div class="receipt-section">
+                            <div class="receipt-label">행운의 아이템</div>
+                            <div class="receipt-value">${fortune.lucky_item}</div>
+                        </div>
+                    `;
+                }
+
+                if (fortune.lucky_color) {
+                    receiptHtml += `
+                        <div class="receipt-section">
+                            <div class="receipt-label">행운의 색상</div>
+                            <div class="receipt-value">${fortune.lucky_color}</div>
+                        </div>
+                    `;
+                }
+
+                if (fortune.lucky_number) {
+                    receiptHtml += `
+                        <div class="receipt-section">
+                            <div class="receipt-label">행운의 숫자</div>
+                            <div class="receipt-value">${fortune.lucky_number}</div>
+                        </div>
+                    `;
+                }
+
+                if (fortune.advice) {
+                    receiptHtml += `
+                        <div class="receipt-section">
+                            <div class="receipt-label">조언</div>
+                            <div class="receipt-content">${fortune.advice}</div>
+                        </div>
+                    `;
+                }
+            }
+
+            // 영수증 푸터
+            receiptHtml += `
+                <div class="barcode">||||| || |||||</div>
+                <div class="fortune-box">
+                    당신의 행운을 빕니다 🙇
+                </div>
+                <div class="receipt-footer">
+                    앞으로 좋은 일만 가득하시길<br>
+                    당신의 미래에 행운이 함께하길<br>
+                    모든 일이 순조롭게 풀리기를<br>
+                    당신의 꿈이 모두 이루어지길<br><br>
+                    오늘도 행복한 하루 되세요 ✨
+                </div>
+            `;
+
+            // 로딩 숨기기
+            document.getElementById('loading').style.display = 'none';
+
+            // 영수증 내용 설정 (프린트용)
+            document.getElementById('receipt-content').innerHTML = receiptHtml;
+            document.getElementById('receipt-content').style.display = 'block';
+
+            // 화면에 감사 메시지 표시 (이미 위에서 설정됨)
+            document.getElementById('thankYouScreen').style.display = 'block';
+
+            // 자동 인쇄
+            setTimeout(() => {
+                window.print();
+            }, 500);
+        }
+
+        // 페이지 로드 시 운세 가져오기
+        getFortune();
+    </script>
+</body>
+</html>

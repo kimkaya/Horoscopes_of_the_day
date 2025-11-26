@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fortune - 운세 보기</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 1980px;
+            width: 1080px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            position: relative;
+        }
+
+        /* Hidden Admin Button */
+        .admin-trigger {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 150px;
+            height: 150px;
+            background: transparent;
+            border: none;
+            cursor: default;
+            z-index: 1000;
+            transition: background-color 0.15s ease;
+        }
+
+        .admin-trigger.clicked {
+            animation: clickFeedback 0.6s ease;
+        }
+
+        @keyframes clickFeedback {
+            0% { background-color: transparent; }
+            30% { background-color: rgba(128, 128, 128, 0.3); }
+            100% { background-color: transparent; }
+        }
+
+        .container {
+            background: white;
+            padding: 80px 60px;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 960px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 64px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 70px;
+            font-size: 28px;
+        }
+
+        .fortune-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .fortune-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 60px 40px;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 4px solid transparent;
+            text-decoration: none;
+            display: block;
+        }
+
+        .fortune-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            border-color: #667eea;
+        }
+
+        .fortune-card.daily {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        }
+
+        .fortune-card.tarot {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+
+        .fortune-card.saju {
+            background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+        }
+
+        .fortune-card.omikuji {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .fortune-icon {
+            font-size: 90px;
+            margin-bottom: 30px;
+        }
+
+        .fortune-title {
+            font-size: 42px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .fortune-desc {
+            font-size: 24px;
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .footer {
+            margin-top: 50px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        /* Admin notification */
+        .admin-notify {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: none;
+            z-index: 2000;
+        }
+
+        .admin-notify.show {
+            display: block;
+            animation: fadeInOut 2s ease;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            10%, 90% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <button class="admin-trigger" id="adminTrigger"></button>
+    <div class="admin-notify" id="adminNotify"></div>
+
+    <div class="container">
+        <h1>🔮 Fortune</h1>
+        <p class="subtitle">당신의 운세를 확인하세요</p>
+
+        <div class="fortune-grid">
+            <a href="daily.html" class="fortune-card daily">
+                <div class="fortune-icon">☀️</div>
+                <div class="fortune-title">오늘의 운세</div>
+                <div class="fortune-desc">오늘 하루의 운세와 행운의 아이템을 알려드립니다</div>
+            </a>
+
+            <a href="tarot.html" class="fortune-card tarot">
+                <div class="fortune-icon">🃏</div>
+                <div class="fortune-title">타로</div>
+                <div class="fortune-desc">신비로운 타로 카드로 당신의 미래를 점쳐보세요</div>
+            </a>
+
+            <a href="saju.html" class="fortune-card saju">
+                <div class="fortune-icon">📿</div>
+                <div class="fortune-title">사주</div>
+                <div class="fortune-desc">생년월일로 당신의 행운을 알아보세요</div>
+            </a>
+
+            <a href="omikuji.html" class="fortune-card omikuji">
+                <div class="fortune-icon">🎋</div>
+                <div class="fortune-title">운세 뽑기</div>
+                <div class="fortune-desc">신비로운 운세로 길흉을 점쳐보세요</div>
+            </a>
+        </div>
+
+        <div class="footer">
+            ✨ 즐거운 하루 되세요 ✨
+        </div>
+    </div>
+
+    <script>
+        let adminClickCount = 0;
+        let lastClickTime = 0;
+        const adminButton = document.getElementById('adminTrigger');
+        const adminNotify = document.getElementById('adminNotify');
+
+        adminButton.addEventListener('click', function() {
+            // 클릭 피드백 효과
+            adminButton.classList.remove('clicked');
+            void adminButton.offsetWidth; // 리플로우 강제
+            adminButton.classList.add('clicked');
+
+            const currentTime = new Date().getTime();
+
+            // 5초 이내에 클릭하지 않으면 카운트 리셋
+            if (currentTime - lastClickTime > 5000) {
+                adminClickCount = 0;
+            }
+
+            adminClickCount++;
+            lastClickTime = currentTime;
+
+            if (adminClickCount === 5) {
+                // 관리자 페이지로 이동
+                window.location.href = 'admin.html';
+            } else if (adminClickCount >= 3) {
+                // 3번 이상 클릭 시 힌트 표시
+                adminNotify.textContent = `${5 - adminClickCount}번 더 클릭하세요`;
+                adminNotify.classList.add('show');
+                setTimeout(() => {
+                    adminNotify.classList.remove('show');
+                }, 2000);
+            }
+
+            // 애니메이션 끝나면 클래스 제거
+            setTimeout(() => {
+                adminButton.classList.remove('clicked');
+            }, 600);
+        });
+    </script>
+</body>
+</html>

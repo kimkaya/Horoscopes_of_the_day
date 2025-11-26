@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 - Fortune</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255,255,255,0.3);
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+        }
+
+        .stats {
+            padding: 30px 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .content {
+            padding: 30px 40px;
+        }
+
+        .search-filter {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .search-filter input,
+        .search-filter select {
+            padding: 10px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .search-filter input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f5f5f5;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #555;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .fortune-type-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-daily {
+            background: #ffecd2;
+            color: #d97706;
+        }
+
+        .badge-tarot {
+            background: #a8edea;
+            color: #0891b2;
+        }
+
+        .badge-saju {
+            background: #d299c2;
+            color: #9333ea;
+        }
+
+        .badge-omikuji {
+            background: #f093fb;
+            color: #db2777;
+        }
+
+        .result-preview {
+            max-width: 400px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #999;
+            font-size: 18px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .modal-close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: #000;
+        }
+
+        .detail-row {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .detail-value {
+            color: #333;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔮 Fortune 관리자</h1>
+            <div class="header-actions">
+                <button class="btn btn-success" onclick="exportExcel()">엑셀 다운로드</button>
+                <a href="index.html" class="btn btn-primary">메인으로</a>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalCount">-</div>
+                <div class="stat-label">전체 운세 조회</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="dailyCount">-</div>
+                <div class="stat-label">오늘의 운세</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="tarotCount">-</div>
+                <div class="stat-label">타로</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="sajuCount">-</div>
+                <div class="stat-label">사주</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="omikujiCount">-</div>
+                <div class="stat-label">오미쿠지</div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="search-filter">
+                <input type="text" id="searchInput" placeholder="이름으로 검색...">
+                <select id="typeFilter">
+                    <option value="">전체 타입</option>
+                    <option value="daily">오늘의 운세</option>
+                    <option value="tarot">타로</option>
+                    <option value="saju">사주</option>
+                    <option value="omikuji">오미쿠지</option>
+                </select>
+            </div>
+
+            <div id="loading" class="loading">데이터를 불러오는 중...</div>
+
+            <div id="tableContainer" style="display: none;">
+                <table id="historyTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>타입</th>
+                            <th>이름</th>
+                            <th>생년월일</th>
+                            <th>성별</th>
+                            <th>결과</th>
+                            <th>일시</th>
+                            <th>상세</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody"></tbody>
+                </table>
+            </div>
+
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">📭</div>
+                <h3>아직 운세 조회 기록이 없습니다</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-close" onclick="closeModal()">&times;</span>
+                <h2>운세 상세 정보</h2>
+            </div>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        let allHistory = [];
+        let filteredHistory = [];
+
+        // Load history data
+        async function loadHistory() {
+            try {
+                const response = await fetch('../Fortune_api/get_history.php');
+                const data = await response.json();
+
+                if (data.success) {
+                    allHistory = data.history;
+                    filteredHistory = allHistory;
+                    updateStats();
+                    displayHistory();
+                } else {
+                    alert('데이터를 불러오는데 실패했습니다: ' + data.message);
+                }
+            } catch (error) {
+                alert('서버 연결 오류: ' + error.message);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        // Update statistics
+        function updateStats() {
+            document.getElementById('totalCount').textContent = allHistory.length;
+
+            const counts = {
+                daily: 0,
+                tarot: 0,
+                saju: 0,
+                omikuji: 0
+            };
+
+            allHistory.forEach(item => {
+                if (counts.hasOwnProperty(item.fortune_type)) {
+                    counts[item.fortune_type]++;
+                }
+            });
+
+            document.getElementById('dailyCount').textContent = counts.daily;
+            document.getElementById('tarotCount').textContent = counts.tarot;
+            document.getElementById('sajuCount').textContent = counts.saju;
+            document.getElementById('omikujiCount').textContent = counts.omikuji;
+        }
+
+        // Display history table
+        function displayHistory() {
+            const tbody = document.getElementById('historyBody');
+            tbody.innerHTML = '';
+
+            if (filteredHistory.length === 0) {
+                document.getElementById('tableContainer').style.display = 'none';
+                document.getElementById('emptyState').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('tableContainer').style.display = 'block';
+            document.getElementById('emptyState').style.display = 'none';
+
+            const typeMap = {
+                daily: { label: '오늘의 운세', class: 'badge-daily' },
+                tarot: { label: '타로', class: 'badge-tarot' },
+                saju: { label: '사주', class: 'badge-saju' },
+                omikuji: { label: '오미쿠지', class: 'badge-omikuji' }
+            };
+
+            const genderMap = {
+                male: '남성',
+                female: '여성',
+                other: '기타'
+            };
+
+            filteredHistory.forEach(item => {
+                const row = tbody.insertRow();
+                const type = typeMap[item.fortune_type] || { label: item.fortune_type, class: '' };
+
+                row.innerHTML = `
+                    <td>${item.id}</td>
+                    <td><span class="fortune-type-badge ${type.class}">${type.label}</span></td>
+                    <td>${item.user_name}</td>
+                    <td>${item.user_birthdate || '-'}</td>
+                    <td>${item.user_gender ? (genderMap[item.user_gender] || item.user_gender) : '-'}</td>
+                    <td><div class="result-preview">${item.result_text}</div></td>
+                    <td>${new Date(item.created_at).toLocaleString('ko-KR')}</td>
+                    <td><button class="btn btn-primary" style="padding: 6px 12px; font-size: 14px;" onclick="showDetail(${item.id})">보기</button></td>
+                `;
+            });
+        }
+
+        // Show detail modal
+        function showDetail(id) {
+            const item = allHistory.find(h => h.id === id);
+            if (!item) return;
+
+            const typeMap = {
+                daily: '오늘의 운세',
+                tarot: '타로',
+                saju: '사주',
+                omikuji: '오미쿠지'
+            };
+
+            const genderMap = {
+                male: '남성',
+                female: '여성',
+                other: '기타'
+            };
+
+            let html = `
+                <div class="detail-row">
+                    <div class="detail-label">타입</div>
+                    <div class="detail-value">${typeMap[item.fortune_type] || item.fortune_type}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">이름</div>
+                    <div class="detail-value">${item.user_name}</div>
+                </div>
+            `;
+
+            if (item.user_birthdate) {
+                html += `
+                    <div class="detail-row">
+                        <div class="detail-label">생년월일</div>
+                        <div class="detail-value">${item.user_birthdate}</div>
+                    </div>
+                `;
+            }
+
+            if (item.user_gender) {
+                html += `
+                    <div class="detail-row">
+                        <div class="detail-label">성별</div>
+                        <div class="detail-value">${genderMap[item.user_gender] || item.user_gender}</div>
+                    </div>
+                `;
+            }
+
+            html += `
+                <div class="detail-row">
+                    <div class="detail-label">결과</div>
+                    <div class="detail-value">${item.result_text}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">조회 일시</div>
+                    <div class="detail-value">${new Date(item.created_at).toLocaleString('ko-KR')}</div>
+                </div>
+            `;
+
+            document.getElementById('modalBody').innerHTML = html;
+            document.getElementById('detailModal').classList.add('show');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('show');
+        }
+
+        // Filter function
+        function filterHistory() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const typeFilter = document.getElementById('typeFilter').value;
+
+            filteredHistory = allHistory.filter(item => {
+                const matchSearch = !searchTerm || item.user_name.toLowerCase().includes(searchTerm);
+                const matchType = !typeFilter || item.fortune_type === typeFilter;
+                return matchSearch && matchType;
+            });
+
+            displayHistory();
+        }
+
+        // Export to Excel
+        function exportExcel() {
+            window.location.href = '../Fortune_api/export_excel.php';
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', filterHistory);
+        document.getElementById('typeFilter').addEventListener('change', filterHistory);
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('detailModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Load data on page load
+        loadHistory();
+    </script>
+</body>
+</html>

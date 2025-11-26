@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>오늘의 운세 - Fortune</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            min-height: 1980px;
+            width: 1080px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .container {
+            background: white;
+            padding: 80px 60px;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .back-btn {
+            background: transparent;
+            border: none;
+            color: #666;
+            font-size: 36px;
+            cursor: pointer;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 56px;
+        }
+
+        .icon {
+            text-align: center;
+            font-size: 100px;
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 40px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 15px;
+            color: #555;
+            font-weight: 600;
+            font-size: 28px;
+        }
+
+        input {
+            width: 100%;
+            padding: 24px 28px;
+            border: 3px solid #e1e1e1;
+            border-radius: 16px;
+            font-size: 28px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #fcb69f;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 28px;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #333;
+            border: none;
+            border-radius: 16px;
+            font-size: 32px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 20px;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(252, 182, 159, 0.4);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+        .description {
+            text-align: center;
+            color: #777;
+            margin-bottom: 50px;
+            line-height: 1.8;
+            font-size: 26px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="back-btn" onclick="window.location.href='index.html'">← 뒤로</button>
+
+        <div class="icon">☀️</div>
+        <h1>오늘의 운세</h1>
+        <p class="description">당신의 이름과 생년월일을 입력하시면<br>오늘의 운세를 알려드립니다</p>
+
+        <form id="dailyForm">
+            <div class="form-group">
+                <label for="name">이름</label>
+                <input type="text" id="name" name="name" placeholder="이름을 입력하세요" required>
+            </div>
+
+            <div class="form-group">
+                <label for="birthdate">생년월일</label>
+                <input type="date" id="birthdate" name="birthdate" required>
+            </div>
+
+            <button type="submit">운세 보기</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('dailyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const birthdate = document.getElementById('birthdate').value;
+
+            // 이름과 생년월일을 URL 파라미터로 전달
+            window.location.href = `result.html?type=daily&name=${encodeURIComponent(name)}&birthdate=${birthdate}`;
+        });
+    </script>
+</body>
+</html>
