@@ -8,7 +8,8 @@
       "Bash(timeout 2 bash -c \"curl -s -o /dev/null -w ''%{http_code}'' http://localhost:8000/Fortune/index.html\")",
       "Bash(\"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe\" -u root -p0000 -e \"SHOW DATABASES LIKE ''fortune_db'';\")",
       "Bash(\"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe\" -u root -p0000 fortune_db -e \"SHOW TABLES;\")",
-      "Bash(\"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe\" -u root -p0000 fortune_db -e \"SELECT COUNT(*) as tarot_count FROM tarot_cards; SELECT COUNT(*) as saju_count FROM saju_results; SELECT COUNT(*) as omikuji_count FROM omikuji_results;\")"
+      "Bash(\"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe\" -u root -p0000 fortune_db -e \"SELECT COUNT(*) as tarot_count FROM tarot_cards; SELECT COUNT(*) as saju_count FROM saju_results; SELECT COUNT(*) as omikuji_count FROM omikuji_results;\")",
+      "Bash(timeout 5 bash:*)"
     ],
     "deny": [],
     "ask": []
