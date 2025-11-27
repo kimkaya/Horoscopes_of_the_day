@@ -220,6 +220,44 @@
             margin-top: 30px;
         }
 
+        /* AI 요약 스타일 */
+        .ai-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: 3px solid white;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 12px;
+            color: white;
+        }
+
+        .ai-summary-header {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ai-summary-content {
+            font-size: 24px;
+            line-height: 1.8;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .ai-summary-loading {
+            text-align: center;
+            font-size: 22px;
+            opacity: 0.8;
+        }
+
+        .ai-summary-loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
         /* 프린트 전용 스타일 */
         @media print {
             body {
@@ -267,6 +305,18 @@
         <div class="thank-you-screen" id="thankYouScreen" style="display: none;">
             <h1>당신의 행운을 빕니다</h1>
             <div class="bow-image">🙇</div>
+
+            <!-- AI 요약 영역 -->
+            <div class="ai-summary" id="aiSummary" style="display: none;">
+                <div class="ai-summary-header">
+                    <span>✨</span>
+                    <span>AI 요약</span>
+                </div>
+                <div class="ai-summary-content" id="aiSummaryContent">
+                    <div class="ai-summary-loading">AI가 운세를 요약하고 있습니다</div>
+                </div>
+            </div>
+
             <p>영수증이 출력됩니다</p>
         </div>
 
@@ -307,6 +357,8 @@
 
                 if (data.success) {
                     displayFortune(data.fortune);
+                    // AI 요약 가져오기
+                    getAISummary(data.fortune);
                 } else {
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('thankYouScreen').innerHTML = `<div class="error">${data.message}</div>`;
@@ -316,6 +368,42 @@
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('thankYouScreen').innerHTML = `<div class="error">운세를 가져오는데 실패했습니다.</div>`;
                 document.getElementById('thankYouScreen').style.display = 'block';
+            }
+        }
+
+        // AI 요약 가져오기
+        async function getAISummary(fortune) {
+            try {
+                // AI 요약 영역 표시
+                document.getElementById('aiSummary').style.display = 'block';
+
+                const response = await fetch('../Fortune_api/summarize_fortune.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        type: fortuneType,
+                        fortune: fortune
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('aiSummaryContent').innerHTML = data.summary;
+                } else {
+                    // API 키가 설정되지 않은 경우 AI 요약 영역 숨기기
+                    if (data.message && data.message.includes('API 키')) {
+                        document.getElementById('aiSummary').style.display = 'none';
+                        console.log('AI 요약: ' + data.message);
+                    } else {
+                        document.getElementById('aiSummaryContent').innerHTML = '요약을 생성할 수 없습니다.';
+                    }
+                }
+            } catch (error) {
+                console.error('AI 요약 오류:', error);
+                document.getElementById('aiSummary').style.display = 'none';
             }
         }
 

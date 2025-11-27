@@ -5,6 +5,12 @@ define('DB_USER', 'root');
 define('DB_PASS', '0000');
 define('DB_NAME', 'fortune_db');
 
+// AI Configuration (Anthropic Claude)
+// API 키를 여기에 입력하세요: https://console.anthropic.com/
+define('CLAUDE_API_KEY', 'your-api-key-here');
+define('CLAUDE_API_URL', 'https://api.anthropic.com/v1/messages');
+define('CLAUDE_MODEL', 'claude-3-5-sonnet-20241022'); // 또는 'claude-3-haiku-20240307' (더 빠르고 저렴)
+
 // Database Connection
 function getDBConnection() {
     try {
