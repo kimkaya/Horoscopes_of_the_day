@@ -5,7 +5,7 @@ USE fortune_db;
 -- Fortune History Table (stores all fortune readings)
 CREATE TABLE IF NOT EXISTS fortune_history (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    fortune_type ENUM('daily', 'tarot', 'saju', 'omikuji') NOT NULL,
+    fortune_type ENUM('daily', 'tarot', 'saju', 'omikuji', 'compatibility') NOT NULL,
     user_name VARCHAR(100) NOT NULL,
     user_birthdate DATE,
     user_gender ENUM('male', 'female', 'other'),

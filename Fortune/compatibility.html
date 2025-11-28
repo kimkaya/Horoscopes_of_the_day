@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>궁합 보기 - Fortune</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffeaa7 0%, #fd79a8 100%);
+            min-height: 1980px;
+            width: 1080px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .container {
+            background: white;
+            padding: 80px 60px;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .back-btn {
+            background: transparent;
+            border: none;
+            color: #666;
+            font-size: 36px;
+            cursor: pointer;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 56px;
+        }
+
+        .icon {
+            text-align: center;
+            font-size: 100px;
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 40px;
+        }
+
+        .person-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+        }
+
+        .person-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #fd79a8;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 15px;
+            color: #555;
+            font-weight: 600;
+            font-size: 28px;
+        }
+
+        input {
+            width: 100%;
+            padding: 24px 28px;
+            border: 3px solid #e1e1e1;
+            border-radius: 16px;
+            font-size: 28px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #fd79a8;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 28px;
+            background: linear-gradient(135deg, #ffeaa7 0%, #fd79a8 100%);
+            color: #333;
+            border: none;
+            border-radius: 16px;
+            font-size: 32px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 20px;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(253, 121, 168, 0.4);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+        .description {
+            text-align: center;
+            color: #777;
+            margin-bottom: 50px;
+            line-height: 1.8;
+            font-size: 26px;
+        }
+
+        /* Privacy Consent Section */
+        .privacy-section {
+            display: none;
+        }
+
+        .privacy-section.show {
+            display: block;
+        }
+
+        .privacy-content h2 {
+            color: #333;
+            font-size: 42px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .privacy-content h3 {
+            color: #fd79a8;
+            font-size: 28px;
+            margin-top: 35px;
+            margin-bottom: 20px;
+        }
+
+        .privacy-content p {
+            color: #666;
+            font-size: 22px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .privacy-content ul {
+            color: #666;
+            font-size: 22px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            padding-left: 40px;
+        }
+
+        .privacy-content li {
+            margin-bottom: 12px;
+        }
+
+        .privacy-highlight {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #ffc107;
+            margin: 25px 0;
+        }
+
+        .privacy-buttons {
+            display: flex;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .privacy-btn {
+            flex: 1;
+            padding: 24px;
+            border: none;
+            border-radius: 16px;
+            font-size: 26px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .privacy-btn.agree {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fd79a8 100%);
+            color: #333;
+        }
+
+        .privacy-btn.agree:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(253, 121, 168, 0.4);
+        }
+
+        .privacy-btn.disagree {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .privacy-btn.disagree:hover {
+            background: #e0e0e0;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="back-btn" onclick="window.location.href='index.html'">← 뒤로</button>
+
+        <div class="icon">💕</div>
+        <h1>궁합 보기</h1>
+
+        <!-- Privacy Consent Section -->
+        <div class="privacy-section" id="privacySection">
+            <div class="privacy-content">
+                <h2>🔒 개인정보 수집 및 이용 동의</h2>
+
+                <p>Fortune 운세 서비스를 이용하시기 전에 개인정보 수집 및 이용에 대한 동의가 필요합니다.</p>
+
+                <h3>1. 수집하는 개인정보 항목</h3>
+                <ul>
+                    <li><strong>필수 정보:</strong> 두 분의 이름, 생년월일</li>
+                </ul>
+
+                <h3>2. 개인정보의 수집 및 이용 목적</h3>
+                <ul>
+                    <li>맞춤형 궁합 결과 제공</li>
+                    <li>운세 기록 저장 및 관리</li>
+                    <li>서비스 개선 및 통계 분석</li>
+                </ul>
+
+                <h3>3. 개인정보의 보유 및 이용 기간</h3>
+                <p>수집된 개인정보는 <strong>서비스 제공 기간 동안</strong> 보관되며, 사용자가 삭제를 요청할 경우 즉시 파기됩니다.</p>
+
+                <h3>4. 개인정보의 제3자 제공</h3>
+                <p>수집된 개인정보는 <strong>제3자에게 제공되지 않습니다</strong>. 오직 운세 서비스 제공 목적으로만 사용됩니다.</p>
+
+                <div class="privacy-highlight">
+                    <p style="margin: 0; font-weight: 600; font-size: 22px;">
+                        ⚠️ 위 개인정보 수집 및 이용에 동의하지 않으실 경우, 운세 서비스 이용이 제한됩니다.
+                    </p>
+                </div>
+
+                <div class="privacy-buttons">
+                    <button class="privacy-btn disagree" onclick="handlePrivacyDisagree()">동의하지 않습니다</button>
+                    <button class="privacy-btn agree" onclick="handlePrivacyAgree()">동의합니다</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Section -->
+        <div class="form-section" id="formSection">
+            <p class="description">두 분의 이름과 생년월일을 입력하시면<br>띠 궁합과 별자리 궁합을 알려드립니다</p>
+
+            <form id="compatibilityForm">
+                <div class="person-section">
+                    <div class="person-title">👤 첫 번째 분</div>
+                    <div class="form-group">
+                        <label for="name1">이름</label>
+                        <input type="text" id="name1" name="name1" placeholder="이름을 입력하세요" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="birthdate1">생년월일</label>
+                        <input type="date" id="birthdate1" name="birthdate1" required>
+                    </div>
+                </div>
+
+                <div class="person-section">
+                    <div class="person-title">👤 두 번째 분</div>
+                    <div class="form-group">
+                        <label for="name2">이름</label>
+                        <input type="text" id="name2" name="name2" placeholder="이름을 입력하세요" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="birthdate2">생년월일</label>
+                        <input type="date" id="birthdate2" name="birthdate2" required>
+                    </div>
+                </div>
+
+                <button type="submit">궁합 보기</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Always show privacy consent section first
+        window.addEventListener('DOMContentLoaded', function() {
+            // Always show privacy consent section
+            document.getElementById('privacySection').classList.add('show');
+        });
+
+        function handlePrivacyAgree() {
+            // Hide privacy section and show form section
+            document.getElementById('privacySection').classList.remove('show');
+            document.getElementById('formSection').classList.add('show');
+        }
+
+        function handlePrivacyDisagree() {
+            alert('개인정보 수집 및 이용에 동의하지 않으시면 서비스를 이용하실 수 없습니다.');
+            window.location.href = 'index.html';
+        }
+
+        document.getElementById('compatibilityForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name1 = document.getElementById('name1').value;
+            const birthdate1 = document.getElementById('birthdate1').value;
+            const name2 = document.getElementById('name2').value;
+            const birthdate2 = document.getElementById('birthdate2').value;
+
+            // 두 사람의 정보를 URL 파라미터로 전달
+            window.location.href = `result.html?type=compatibility&name1=${encodeURIComponent(name1)}&birthdate1=${birthdate1}&name2=${encodeURIComponent(name2)}&birthdate2=${birthdate2}`;
+        });
+    </script>
+</body>
+</html>

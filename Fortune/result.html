@@ -335,30 +335,53 @@
         const birthdate = urlParams.get('birthdate');
         const gender = urlParams.get('gender');
         const question = urlParams.get('question');
+        // 궁합용 파라미터
+        const name1 = urlParams.get('name1');
+        const birthdate1 = urlParams.get('birthdate1');
+        const name2 = urlParams.get('name2');
+        const birthdate2 = urlParams.get('birthdate2');
 
         // API 호출
         async function getFortune() {
             try {
-                const response = await fetch('../Fortune_api/get_fortune.php', {
+                let apiUrl = '../Fortune_api/get_fortune.php';
+                let requestBody = {
+                    type: fortuneType,
+                    name: name,
+                    birthdate: birthdate,
+                    gender: gender,
+                    question: question
+                };
+
+                // 궁합일 경우 다른 API 사용
+                if (fortuneType === 'compatibility') {
+                    apiUrl = '../Fortune_api/get_compatibility.php';
+                    requestBody = {
+                        name1: name1,
+                        birthdate1: birthdate1,
+                        name2: name2,
+                        birthdate2: birthdate2
+                    };
+                }
+
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        type: fortuneType,
-                        name: name,
-                        birthdate: birthdate,
-                        gender: gender,
-                        question: question
-                    })
+                    body: JSON.stringify(requestBody)
                 });
 
                 const data = await response.json();
 
                 if (data.success) {
-                    displayFortune(data.fortune);
-                    // AI 요약 가져오기
-                    getAISummary(data.fortune);
+                    if (fortuneType === 'compatibility') {
+                        displayFortune(data.compatibility);
+                    } else {
+                        displayFortune(data.fortune);
+                        // AI 요약 가져오기
+                        getAISummary(data.fortune);
+                    }
                 } else {
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('thankYouScreen').innerHTML = `<div class="error">${data.message}</div>`;
@@ -432,11 +455,17 @@
                     icon = '🎋';
                     title = '운세 뽑기';
                     break;
+                case 'compatibility':
+                    icon = '💕';
+                    title = '궁합';
+                    break;
             }
 
             // 화면용 감사 메시지에 운세 결과 요약 추가
             let fortuneSummary = '';
-            if (fortune.overall) {
+            if (fortuneType === 'compatibility' && fortune.overall) {
+                fortuneSummary = fortune.overall.summary;
+            } else if (fortune.overall) {
                 fortuneSummary = fortune.overall.substring(0, 100) + (fortune.overall.length > 100 ? '...' : '');
             } else if (fortune.overall_interpretation) {
                 fortuneSummary = fortune.overall_interpretation.substring(0, 100) + (fortune.overall_interpretation.length > 100 ? '...' : '');
@@ -467,21 +496,59 @@
                     <div class="receipt-label">일시</div>
                     <div class="receipt-value">${dateStr} ${timeStr}</div>
                 </div>
-
-                <div class="receipt-section">
-                    <div class="receipt-label">이름</div>
-                    <div class="receipt-value">${name}</div>
-                </div>
             `;
 
-            // 생년월일 추가
-            if (birthdate) {
+            // 궁합일 경우 두 사람의 정보 표시
+            if (fortuneType === 'compatibility') {
                 receiptHtml += `
                     <div class="receipt-section">
-                        <div class="receipt-label">생년월일</div>
-                        <div class="receipt-value">${birthdate}</div>
+                        <div class="receipt-label">첫 번째 분</div>
+                        <div class="receipt-value">${fortune.person1.name}</div>
+                        <div class="receipt-content">${fortune.person1.birthdate} (${fortune.person1.zodiac}, ${fortune.person1.star_sign})</div>
+                    </div>
+
+                    <div class="receipt-section">
+                        <div class="receipt-label">두 번째 분</div>
+                        <div class="receipt-value">${fortune.person2.name}</div>
+                        <div class="receipt-content">${fortune.person2.birthdate} (${fortune.person2.zodiac}, ${fortune.person2.star_sign})</div>
+                    </div>
+
+                    <div class="receipt-section">
+                        <div class="receipt-label">종합 궁합</div>
+                        <div class="receipt-value">${fortune.overall.score}점 (${fortune.overall.level})</div>
+                    </div>
+
+                    <div class="receipt-section">
+                        <div class="receipt-label">띠 궁합</div>
+                        <div class="receipt-value">${fortune.zodiac_compatibility.score}점 (${fortune.zodiac_compatibility.level})</div>
+                        <div class="receipt-content">${fortune.zodiac_compatibility.description}</div>
+                        ${fortune.zodiac_compatibility.advice ? `<div class="receipt-content" style="margin-top: 10px;">💡 ${fortune.zodiac_compatibility.advice}</div>` : ''}
+                    </div>
+
+                    <div class="receipt-section">
+                        <div class="receipt-label">별자리 궁합</div>
+                        <div class="receipt-value">${fortune.star_sign_compatibility.score}점 (${fortune.star_sign_compatibility.level})</div>
+                        <div class="receipt-content">${fortune.star_sign_compatibility.description}</div>
                     </div>
                 `;
+            } else {
+                // 일반 운세는 이름과 생년월일 표시
+                receiptHtml += `
+                    <div class="receipt-section">
+                        <div class="receipt-label">이름</div>
+                        <div class="receipt-value">${name}</div>
+                    </div>
+                `;
+
+                // 생년월일 추가
+                if (birthdate) {
+                    receiptHtml += `
+                        <div class="receipt-section">
+                            <div class="receipt-label">생년월일</div>
+                            <div class="receipt-value">${birthdate}</div>
+                        </div>
+                    `;
+                }
             }
 
             // 별자리 추가 (오늘의 운세인 경우)

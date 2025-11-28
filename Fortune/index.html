@@ -81,6 +81,14 @@
             margin-top: 60px;
         }
 
+        .fortune-grid.five-items {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .fortune-grid.five-items .fortune-card:last-child {
+            grid-column: 2 / 3;
+        }
+
         .fortune-card {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             padding: 60px 40px;
@@ -112,6 +120,10 @@
 
         .fortune-card.omikuji {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .fortune-card.compatibility {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fd79a8 100%);
         }
 
         .fortune-icon {
@@ -172,7 +184,7 @@
         <h1>🔮 Fortune</h1>
         <p class="subtitle">당신의 운세를 확인하세요</p>
 
-        <div class="fortune-grid">
+        <div class="fortune-grid five-items">
             <div class="fortune-card daily" onclick="navigateToPage('daily.html')">
                 <div class="fortune-icon">☀️</div>
                 <div class="fortune-title">오늘의 운세</div>
@@ -196,6 +208,12 @@
                 <div class="fortune-title">운세 뽑기</div>
                 <div class="fortune-desc">신비로운 운세로 길흉을 점쳐보세요</div>
             </div>
+
+            <div class="fortune-card compatibility" onclick="navigateToPage('compatibility.html')">
+                <div class="fortune-icon">💕</div>
+                <div class="fortune-title">궁합 보기</div>
+                <div class="fortune-desc">두 사람의 띠 궁합과 별자리 궁합을 알려드립니다</div>
+            </div>
         </div>
 
         <div class="footer">
@@ -216,14 +234,14 @@
 
         adminButton.addEventListener('click', function() {
             // 클릭 피드백 효과
-            adminButton.classList.remove('clicked');
-            void adminButton.offsetWidth; // 리플로우 강제
-            adminButton.classList.add('clicked');
+            //adminButton.classList.remove('clicked');
+            //void adminButton.offsetWidth; // 리플로우 강제
+            //adminButton.classList.add('clicked');
 
             const currentTime = new Date().getTime();
 
-            // 5초 이내에 클릭하지 않으면 카운트 리셋
-            if (currentTime - lastClickTime > 5000) {
+            // 3초 이내에 클릭하지 않으면 카운트 리셋
+            if (currentTime - lastClickTime > 3000) {
                 adminClickCount = 0;
             }
 
@@ -235,11 +253,11 @@
                 window.location.href = 'admin.html';
             } else if (adminClickCount >= 3) {
                 // 3번 이상 클릭 시 힌트 표시
-                adminNotify.textContent = `${5 - adminClickCount}번 더 클릭하세요`;
-                adminNotify.classList.add('show');
-                setTimeout(() => {
-                    adminNotify.classList.remove('show');
-                }, 2000);
+                //adminNotify.textContent = `${5 - adminClickCount}번 더 클릭하세요`;
+                //adminNotify.classList.add('show');
+                //setTimeout(() => {
+                //    adminNotify.classList.remove('show');
+                //}, 2000);
             }
 
             // 애니메이션 끝나면 클래스 제거

@@ -9,7 +9,14 @@
       "Bash(\"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe\" -u root -p0000 -e \"SHOW DATABASES LIKE ''fortune_db'';\")",
       "Bash(\"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe\" -u root -p0000 fortune_db -e \"SHOW TABLES;\")",
       "Bash(\"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe\" -u root -p0000 fortune_db -e \"SELECT COUNT(*) as tarot_count FROM tarot_cards; SELECT COUNT(*) as saju_count FROM saju_results; SELECT COUNT(*) as omikuji_count FROM omikuji_results;\")",
-      "Bash(timeout 5 bash:*)"
+      "Bash(timeout 5 bash:*)",
+      "Bash(\"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe\" -u root -p0000 fortune_db -e \"SOURCE C:/Users/sanik/Documents/php_test/Fortune_full/Fortune_db/compatibility_data.sql\")",
+      "Bash(\"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe\":*)",
+      "Bash(\"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe\" -u root -p0000 fortune_db --default-character-set=utf8mb4 -e \"SOURCE C:/Users/sanik/Documents/php_test/Fortune_full/Fortune_db/compatibility_data.sql\")",
+      "Bash(\"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe\" -u root -p0000 fortune_db -e \"SELECT COUNT(*) as zodiac_count FROM zodiac_compatibility; SELECT COUNT(*) as star_count FROM star_sign_compatibility;\")",
+      "Bash(\"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe\" -u root -p0000 fortune_db -e \"ALTER TABLE fortune_history MODIFY fortune_type ENUM(''daily'', ''tarot'', ''saju'', ''omikuji'', ''compatibility'') NOT NULL;\")",
+      "Bash(\"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe\" -u root -p0000 fortune_db -e \"ALTER TABLE fortune_history MODIFY user_birthdate VARCHAR(200);\")",
+      "Bash(\"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe\" -u root -p0000 fortune_db -e \"DESCRIBE fortune_history;\")"
     ],
     "deny": [],
     "ask": []
