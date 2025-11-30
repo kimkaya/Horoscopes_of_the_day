@@ -11,6 +11,12 @@ define('CLAUDE_API_KEY', 'your-api-key-here');
 define('CLAUDE_API_URL', 'https://api.anthropic.com/v1/messages');
 define('CLAUDE_MODEL', 'claude-3-5-sonnet-20241022'); // 또는 'claude-3-haiku-20240307' (더 빠르고 저렴)
 
+// Gemini AI Configuration
+// API 키: https://aistudio.google.com/app/apikey
+define('GEMINI_API_KEY', 'AIzaSyB62rFrzjdr5J7Jsv2AaEoTFkeHf8Fa0lY');
+define('GEMINI_API_URL', 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent');
+define('GEMINI_MODEL', 'gemini-pro');
+
 // Database Connection
 function getDBConnection() {
     try {

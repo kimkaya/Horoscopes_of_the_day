@@ -81,12 +81,8 @@
             margin-top: 60px;
         }
 
-        .fortune-grid.five-items {
+        .fortune-grid.six-items {
             grid-template-columns: repeat(3, 1fr);
-        }
-
-        .fortune-grid.five-items .fortune-card:last-child {
-            grid-column: 2 / 3;
         }
 
         .fortune-card {
@@ -124,6 +120,10 @@
 
         .fortune-card.compatibility {
             background: linear-gradient(135deg, #ffeaa7 0%, #fd79a8 100%);
+        }
+
+        .fortune-card.ai-consult {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
         }
 
         .fortune-icon {
@@ -184,7 +184,7 @@
         <h1>🔮 Fortune</h1>
         <p class="subtitle">당신의 운세를 확인하세요</p>
 
-        <div class="fortune-grid five-items">
+        <div class="fortune-grid six-items">
             <div class="fortune-card daily" onclick="navigateToPage('daily.html')">
                 <div class="fortune-icon">☀️</div>
                 <div class="fortune-title">오늘의 운세</div>
@@ -213,6 +213,12 @@
                 <div class="fortune-icon">💕</div>
                 <div class="fortune-title">궁합 보기</div>
                 <div class="fortune-desc">두 사람의 띠 궁합과 별자리 궁합을 알려드립니다</div>
+            </div>
+
+            <div class="fortune-card ai-consult" onclick="navigateToPage('ai_consult.html')">
+                <div class="fortune-icon">🤖</div>
+                <div class="fortune-title">AI 운세 상담</div>
+                <div class="fortune-desc">AI와 대화하며 운세에 대한 조언을 받아보세요</div>
             </div>
         </div>
 
