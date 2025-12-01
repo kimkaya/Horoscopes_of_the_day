@@ -65,13 +65,32 @@ if ($userData) {
 
 // 컨텍스트 정보 추가
 $contextInfoText = "";
-if ($contextInfo) {
-    $contextInfoText = "\n\n[현재 상황 정보]\n";
+// 날짜 정보를 항상 포함
+$currentDate = date('Y년 m월 d일 (l)', time());
+$currentTime = date('H:i', time());
+$currentHour = (int)date('H', time());
 
-    // 날짜/시간 정보
+$contextInfoText = "\n\n[중요: 현재 날짜와 시간]\n";
+$contextInfoText .= "오늘 날짜: " . $currentDate . "\n";
+$contextInfoText .= "현재 시각: " . $currentTime . "\n";
+
+// 시간대별 메시지
+if ($currentHour >= 6 && $currentHour < 12) {
+    $contextInfoText .= "시간대: 오전 (아침)\n";
+} elseif ($currentHour >= 12 && $currentHour < 18) {
+    $contextInfoText .= "시간대: 오후 (낮)\n";
+} elseif ($currentHour >= 18 && $currentHour < 22) {
+    $contextInfoText .= "시간대: 저녁\n";
+} else {
+    $contextInfoText .= "시간대: 밤\n";
+}
+
+if ($contextInfo) {
+    // 날짜/시간 정보 (클라이언트에서 전달된 경우 우선 사용)
     if (isset($contextInfo['dateTime'])) {
         $dt = $contextInfo['dateTime'];
-        $contextInfoText .= "현재 날짜: " . $dt['date'] . " (" . $dt['dayOfWeek'] . ")\n";
+        $contextInfoText = "\n\n[중요: 현재 날짜와 시간]\n";
+        $contextInfoText .= "오늘 날짜: " . $dt['date'] . " (" . $dt['dayOfWeek'] . ")\n";
         $contextInfoText .= "현재 시각: " . $dt['time'] . "\n";
 
         // 시간대별 메시지
@@ -103,14 +122,20 @@ if ($contextInfo) {
             $contextInfoText .= "습도: " . $weather['humidity'] . "%\n";
         }
     }
-
-    $contextInfoText .= "\n※ 위 정보를 참고하여 현재 상황에 맞는 조언을 해주세요. 예를 들어, 시간대나 날씨에 따라 적절한 활동이나 주의사항을 제안할 수 있습니다.";
 }
+
+$contextInfoText .= "\n※ 반드시 위의 날짜와 시간을 기준으로 답변해주세요.";
 
 $systemPrompt = "당신은 전문적이고 친절한 운세 상담사입니다. 사용자의 고민과 질문에 대해 따뜻하고 긍정적인 조언을 제공합니다.
 타로, 사주, 별자리, 오미쿠지 등 다양한 운세에 대한 해석과 조언을 할 수 있습니다.
 답변은 한국어로 하며, 존댓말을 사용합니다.
-답변은 2-3문장 정도로 매우 간결하게 작성합니다. 핵심만 전달하세요.
+
+[중요 규칙]
+1. 답변은 반드시 1-2문장으로 작성합니다. 절대 3문장을 넘지 마세요.
+2. 각 문장은 최대 40자 이내로 작성합니다.
+3. 핵심 메시지만 간결하게 전달하세요.
+4. 불필요한 설명이나 부연 설명은 생략합니다.
+
 사용자의 운세와 관련된 질문에만 답변하며, 다른 주제는 정중히 거절합니다." . $userInfoText . $contextInfoText;
 
 // 대화 이력 구성
@@ -150,7 +175,7 @@ $requestData = [
         'temperature' => 0.7,
         'topK' => 40,
         'topP' => 0.95,
-        'maxOutputTokens' => 300,
+        'maxOutputTokens' => 100,
     ],
     'safetySettings' => [
         [
