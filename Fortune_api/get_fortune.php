@@ -69,6 +69,9 @@ if (!$conn) {
 }
 
 try {
+    // Start transaction
+    $conn->beginTransaction();
+
     $fortuneType = $data['type'];
     $name = htmlspecialchars($data['name'], ENT_QUOTES, 'UTF-8');
     $birthdate = isset($data['birthdate']) ? $data['birthdate'] : null;
@@ -180,11 +183,17 @@ try {
                         $fortuneData['lucky_number']
                     );
                 } else {
+                    if ($conn->inTransaction()) {
+                        $conn->rollBack();
+                    }
                     $response['message'] = '별자리를 계산할 수 없습니다.';
                     echo json_encode($response, JSON_UNESCAPED_UNICODE);
                     exit();
                 }
             } else {
+                if ($conn->inTransaction()) {
+                    $conn->rollBack();
+                }
                 $response['message'] = '생년월일 정보가 필요합니다.';
                 echo json_encode($response, JSON_UNESCAPED_UNICODE);
                 exit();
@@ -289,12 +298,18 @@ try {
             break;
 
         default:
+            if ($conn->inTransaction()) {
+                $conn->rollBack();
+            }
             $response['message'] = '잘못된 운세 타입입니다.';
             echo json_encode($response, JSON_UNESCAPED_UNICODE);
             exit();
     }
 
     if (!$fortune) {
+        if ($conn->inTransaction()) {
+            $conn->rollBack();
+        }
         $response['message'] = '운세 데이터를 찾을 수 없습니다.';
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
         exit();
@@ -313,11 +328,18 @@ try {
         $resultText
     ]);
 
+    // Commit transaction
+    $conn->commit();
+
     $response['success'] = true;
     $response['message'] = '운세를 성공적으로 가져왔습니다.';
     $response['fortune'] = $fortune;
 
 } catch (PDOException $e) {
+    // Rollback on error
+    if ($conn && $conn->inTransaction()) {
+        $conn->rollBack();
+    }
     $response['message'] = '오류가 발생했습니다: ' . $e->getMessage();
     error_log("Fortune API Error: " . $e->getMessage());
 }

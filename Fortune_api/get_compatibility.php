@@ -127,6 +127,9 @@ if (!$conn) {
 }
 
 try {
+    // Start transaction
+    $conn->beginTransaction();
+
     $name1 = htmlspecialchars($data['name1'], ENT_QUOTES, 'UTF-8');
     $birthdate1 = $data['birthdate1'];
     $name2 = htmlspecialchars($data['name2'], ENT_QUOTES, 'UTF-8');
@@ -228,11 +231,18 @@ try {
     $combinedBirthdates = $birthdate1 . ' & ' . $birthdate2;
     $stmt->execute([$combinedNames, $combinedBirthdates, $resultText]);
 
+    // Commit transaction
+    $conn->commit();
+
     $response['success'] = true;
     $response['message'] = '궁합을 성공적으로 가져왔습니다.';
     $response['compatibility'] = $compatibility;
 
 } catch (PDOException $e) {
+    // Rollback on error
+    if ($conn && $conn->inTransaction()) {
+        $conn->rollBack();
+    }
     $response['message'] = '오류가 발생했습니다: ' . $e->getMessage();
     error_log("Compatibility API Error: " . $e->getMessage());
 }

@@ -19,7 +19,10 @@
       "Bash(\"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe\" -u root -p0000 fortune_db -e \"DESCRIBE fortune_history;\")",
       "Bash(curl:*)",
       "Bash(timeout 2 bash -c \"sleep 1 && curl -X POST http://localhost:8000/Fortune_api/ai_consult.php -H ''Content-Type: application/json'' -d ''{\"\"message\"\":\"\"테스트\"\"}''\")",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(\"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe\" -u root -p0000 fortune_db -e \"SOURCE C:/Users/sanik/Documents/php_test/Fortune_full/Fortune_db/critical_section_fixes.sql\")",
+      "Bash(\"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe\" -u root -p0000 fortune_db -e \"SHOW CREATE TABLE zodiac_compatibility;\")",
+      "Bash(\"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe\" -u root -p0000 fortune_db -e \"SHOW CREATE TABLE fortune_history;\")"
     ],
     "deny": [],
     "ask": []
