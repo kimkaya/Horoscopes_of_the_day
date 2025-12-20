@@ -76,6 +76,7 @@ try {
     $name = htmlspecialchars($data['name'], ENT_QUOTES, 'UTF-8');
     $birthdate = isset($data['birthdate']) ? $data['birthdate'] : null;
     $gender = isset($data['gender']) ? $data['gender'] : null;
+    $phone = isset($data['phone']) ? htmlspecialchars($data['phone'], ENT_QUOTES, 'UTF-8') : null;
 
     $fortune = null;
     $resultText = '';
@@ -317,14 +318,15 @@ try {
 
     // Save to history
     $stmt = $conn->prepare("
-        INSERT INTO fortune_history (fortune_type, user_name, user_birthdate, user_gender, result_text)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO fortune_history (fortune_type, user_name, user_birthdate, user_gender, user_phone, result_text)
+        VALUES (?, ?, ?, ?, ?, ?)
     ");
     $stmt->execute([
         $fortuneType,
         $name,
         $birthdate,
         $gender,
+        $phone,
         $resultText
     ]);
 

@@ -131,9 +131,13 @@ try {
     $conn->beginTransaction();
 
     $name1 = htmlspecialchars($data['name1'], ENT_QUOTES, 'UTF-8');
+    $gender1 = isset($data['gender1']) ? $data['gender1'] : null;
     $birthdate1 = $data['birthdate1'];
+    $phone1 = isset($data['phone1']) ? htmlspecialchars($data['phone1'], ENT_QUOTES, 'UTF-8') : null;
     $name2 = htmlspecialchars($data['name2'], ENT_QUOTES, 'UTF-8');
+    $gender2 = isset($data['gender2']) ? $data['gender2'] : null;
     $birthdate2 = $data['birthdate2'];
+    $phone2 = isset($data['phone2']) ? htmlspecialchars($data['phone2'], ENT_QUOTES, 'UTF-8') : null;
 
     // 띠 계산
     $zodiac1 = getZodiacAnimal($birthdate1);
@@ -224,12 +228,14 @@ try {
 
     // Save to history
     $stmt = $conn->prepare("
-        INSERT INTO fortune_history (fortune_type, user_name, user_birthdate, result_text)
-        VALUES ('compatibility', ?, ?, ?)
+        INSERT INTO fortune_history (fortune_type, user_name, user_birthdate, user_gender, user_phone, result_text)
+        VALUES ('compatibility', ?, ?, ?, ?, ?)
     ");
     $combinedNames = $name1 . ' & ' . $name2;
     $combinedBirthdates = $birthdate1 . ' & ' . $birthdate2;
-    $stmt->execute([$combinedNames, $combinedBirthdates, $resultText]);
+    $combinedGenders = ($gender1 ? $gender1 : '') . ' & ' . ($gender2 ? $gender2 : '');
+    $combinedPhones = ($phone1 ? $phone1 : '') . ' & ' . ($phone2 ? $phone2 : '');
+    $stmt->execute([$combinedNames, $combinedBirthdates, $combinedGenders, $combinedPhones, $resultText]);
 
     // Commit transaction
     $conn->commit();
